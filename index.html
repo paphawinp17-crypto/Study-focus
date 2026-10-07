@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Study Focus – ตารางเรียน จับเวลา สรุปผล</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5fb;--card:#fff;--ink:#14213d;--mute:#6b7592;--line:#e1e6f2;--acc:#3d4db7;--acc2:#2bb594;--warn:#f2b134;--r:18px;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1426;--card:#1a2140;--ink:#eef1fb;--mute:#9aa4c7;--line:#2a3358;--acc:#7b8cff;--acc2:#3fd1ae}}
+:root[data-theme="dark"]{--bg:#0f1426;--card:#1a2140;--ink:#eef1fb;--mute:#9aa4c7;--line:#2a3358;--acc:#7b8cff;--acc2:#3fd1ae}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans Thai",system-ui,sans-serif;line-height:1.5;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+main{max-width:560px;margin:0 auto;padding:20px 16px}
+h1{font-size:24px;margin:4px 0 16px}h2{font-size:17px;margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;border-radius:12px;padding:10px 16px;background:var(--acc);color:#fff;font-weight:500}
+button.ghost{background:transparent;color:var(--acc);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+input,select{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%}
+.row{display:flex;gap:8px;align-items:center}.row>*{min-width:0}
+.days{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
+.day{flex:1 1 0;min-width:0;padding:8px 0;text-align:center;background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:14px}
+.day small{display:block;color:var(--mute);font-size:12px}.day.on{background:var(--acc);color:#fff;border-color:var(--acc)}.day.on small{color:#dfe3ff}
+.task{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.task:first-of-type{border-top:0}.task .t{flex:1;min-width:0}.task b{display:block;overflow-wrap:anywhere}
+.task.done b{text-decoration:line-through;color:var(--mute)}
+.task small{color:var(--mute)}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.chk{width:24px;height:24px;flex:0 0 24px;accent-color:var(--acc2)}
+.sm{padding:7px 12px;font-size:14px}.x{background:transparent;color:var(--mute);padding:6px 8px}
+.empty{color:var(--mute);text-align:center;padding:18px 0}
+.ring{position:relative;width:min(280px,76vw);aspect-ratio:1;margin:8px auto 16px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .time{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.time span{font-size:56px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.time small{color:var(--mute)}
+.modes{display:flex;gap:6px;margin-bottom:8px}.modes button{flex:1;background:var(--bg);color:var(--mute);border:1px solid var(--line);padding:8px 4px;font-size:14px}
+.modes button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.now{text-align:center}.now b{font-size:18px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.stat b{display:block;font-size:22px;font-variant-numeric:tabular-nums}.stat small{color:var(--mute)}
+.bars{display:flex;align-items:flex-end;gap:8px;height:150px}
+.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:12px;color:var(--mute)}
+.bar i{display:block;width:100%;background:var(--acc);border-radius:8px 8px 3px 3px;min-height:2px}
+.legend{list-style:none;padding:0;margin:12px 0 0}.legend li{display:flex;justify-content:space-between;padding:4px 0}
+.prog{height:12px;background:var(--bg);border-radius:8px;overflow:hidden;margin-top:8px}.prog i{display:block;height:100%;background:var(--acc2)}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav div{display:flex;width:100%;max-width:560px}
+nav button{flex:1;background:transparent;color:var(--mute);border-radius:0;padding:12px 4px;font-size:13px}
+nav button.on{color:var(--acc);font-weight:700}nav button span{display:block;font-size:20px}
+.set{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.set label{font-size:13px;color:var(--mute)}
+.day.we small{color:#e5566d}.day.on.we small{color:#fff}.day.td{box-shadow:inset 0 -3px 0 var(--warn)}
+.wk{display:flex;justify-content:space-between;align-items:baseline;margin:2px 2px 8px}.wk small{color:var(--acc);font-weight:700}
+.wkhead{display:flex;justify-content:space-between;background:var(--bg);border-radius:10px;padding:6px 10px;margin:14px 0 2px;font-size:14px}.wkhead:first-child{margin-top:0}.wkhead span{color:var(--acc);font-weight:700}
+.guide{overflow-wrap:anywhere}.guide h3{font-size:16px;margin:14px 0 4px}.guide h3:first-child{margin-top:0}.guide p{margin:6px 0}.guide ul{padding-left:20px;margin:6px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav><div id="nav"></div></nav>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const key=d=>{const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const TH=['อา','จ','อ','พ','พฤ','ศ','ส'];
+const WS=1; /* วันแรกของสัปดาห์: 1=จันทร์, 0=อาทิตย์ */
+const COL=['#3d4db7','#2bb594','#f2b134','#e5566d','#8a5cd0','#2a9fd6','#e07b39'];
+let S={tasks:[],sessions:[],settings:{focus:25,short:5,long:15}};
+try{const r=localStorage.getItem('studyfocus');if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const save=()=>{try{localStorage.setItem('studyfocus',JSON.stringify(S))}catch(e){}};
+const subjColor=n=>{let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%997;return COL[h%COL.length]};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const studied=id=>S.sessions.filter(s=>s.taskId===id).reduce((a,s)=>a+s.min,0);
+
+let tab='schedule',selDay=key(new Date());
+let T={mode:'focus',total:S.settings.focus*60,left:S.settings.focus*60,end:0,run:false,taskId:null,count:0,iv:null};
+
+const NAV=[['schedule','📅','ตารางเรียน'],['timer','⏱️','จับเวลา'],['guide','🔎','ค้นคว้า'],['dash','📊','สรุปผล']];
+function go(t){tab=t;render()}
+function render(){
+  $('#nav').innerHTML=NAV.map(n=>`<button class="${tab===n[0]?'on':''}" onclick="go('${n[0]}')" ${tab===n[0]?'aria-current="page"':''}><span>${n[1]}</span>${n[2]}</button>`).join('');
+  $('#app').innerHTML=tab==='schedule'?vSchedule():tab==='timer'?vTimer():tab==='guide'?vGuide():vDash();
+  if(tab==='timer')tick(true);
+}
+
+/* ---------- 1. Schedule ---------- */
+function vSchedule(){
+  const ws=wkStart(selDay),days=[];
+  for(let i=0;i<7;i++)days.push(addDays(ws,i));
+  const thisWk=key(wkStart(key(new Date())))===key(ws);
+  const list=S.tasks.filter(t=>t.date===selDay);
+  const done=list.filter(t=>t.done).length;
+  return `<h1>ตารางเรียน</h1>
+  <div class="row" style="margin-bottom:8px"><button class="ghost sm" onclick="shiftDay(-7)" aria-label="ย้อนกลับ 7 วัน">‹</button><input type="date" value="${selDay}" onchange="if(this.value){selDay=this.value;render()}" aria-label="เลือกวันที่"><button class="ghost sm" onclick="shiftDay(7)" aria-label="ไปข้างหน้า 7 วัน">›</button><button class="ghost sm" onclick="selDay=key(new Date());render()">วันนี้</button></div>
+  <div class="wk"><b>สัปดาห์ ${wkLabel(ws)}</b>${thisWk?'<small>สัปดาห์นี้</small>':''}</div>
+  <div class="days" role="tablist">${days.map(d=>`<button class="day ${key(d)===selDay?'on':''} ${[0,6].includes(d.getDay())?'we':''} ${key(d)===key(new Date())?'td':''}" onclick="selDay='${key(d)}';render()"><small>${TH[d.getDay()]}</small>${d.getDate()}</button>`).join('')}</div>
+  <div class="card"><h2>เพิ่มแผนการอ่าน</h2>
+    <div class="row" style="margin-bottom:8px"><input id="nSub" placeholder="วิชา เช่น คณิตศาสตร์" maxlength="40" aria-label="วิชา"><input id="nMin" type="number" min="5" max="240" value="30" style="width:84px" aria-label="นาที"></div>
+    <div class="row"><input id="nTop" placeholder="หัวข้อ เช่น ทบทวนบทที่ 3" maxlength="80" aria-label="หัวข้อ"><button onclick="addTask()">เพิ่ม</button></div></div>
+  <div class="card"><h2>${fmtDay(selDay)}${list.length?` · ทำแล้ว ${done}/${list.length}`:''}</h2>
+  ${list.length?list.map(t=>`<div class="task ${t.done?'done':''}">
+    <input class="chk" type="checkbox" ${t.done?'checked':''} onchange="toggle('${t.id}')" aria-label="เสร็จแล้ว">
+    <div class="t"><b><span class="dot" style="background:${subjColor(t.subject)}"></span>${esc(t.subject)}${t.topic?' – '+esc(t.topic):''}</b><small>แผน ${t.min} นาที · อ่านแล้ว ${studied(t.id)} นาที</small></div>
+    ${t.done?'':`<button class="sm" onclick="startTask('${t.id}')">เริ่มจับเวลา</button>`}
+    <button class="x" onclick="delTask('${t.id}')" aria-label="ลบ">✕</button></div>`).join(''):'<div class="empty">ยังไม่มีแผนในวันนี้ เพิ่มวิชาแรกด้านบนได้เลย</div>'}</div>${histCard(selDay)}`;
+}
+function shiftDay(n){selDay=key(addDays(new Date(selDay+'T00:00'),n));render()}
+function fmtDay(k){return new Date(k+'T00:00').toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
+function histCard(k){
+  const hs=S.sessions.filter(s=>s.date===k),tot=hs.reduce((a,s)=>a+s.min,0);
+  return `<div class="card"><h2>เรื่องที่อ่านไปแล้ว${tot?` (${tot} นาที)`:''}</h2>`+(hs.length?hs.map(s=>`<div class="task"><div class="t"><b><span class="dot" style="background:${subjColor(s.subject)}"></span>${esc(s.subject)}${s.topic?' – '+esc(s.topic):''}</b></div><small>${s.min} นาที</small></div>`).join(''):'<div class="empty">ยังไม่มีบันทึกการอ่านในวันนี้</div>')+'</div>';
+}
+function wkStart(k){const d=new Date(k+'T00:00');return addDays(d,-((d.getDay()-WS+7)%7))}
+function wkLabel(st){const f=d=>d.toLocaleDateString('th-TH',{day:'numeric',month:'short'});return f(st)+' – '+f(addDays(st,6))}
+function histAll(){
+  const ds=[...new Set(S.sessions.map(s=>s.date))].sort().reverse().slice(0,60);
+  if(!ds.length)return '<div class="empty">ยังไม่มีประวัติ จับเวลาให้ครบ 1 รอบเพื่อเริ่มบันทึก</div>';
+  let out='',cur='';
+  ds.forEach(d=>{
+    const st=wkStart(d),w=key(st);
+    if(w!==cur){cur=w;const tot=S.sessions.filter(s=>key(wkStart(s.date))===w).reduce((a,s)=>a+s.min,0);
+      out+=`<div class="wkhead"><b>สัปดาห์ ${wkLabel(st)}</b><span>${tot>=60?(tot/60).toFixed(1)+' ชม.':tot+' นาที'}</span></div>`}
+    const m={};S.sessions.filter(s=>s.date===d).forEach(s=>{const n=s.subject+(s.topic?' – '+s.topic:'');m[n]=(m[n]||0)+s.min});
+    out+=`<div class="task"><div class="t"><b>${fmtDay(d)}</b><small>${Object.entries(m).map(([n,v])=>esc(n)+' '+v+' นาที').join(', ')}</small></div><button class="ghost sm" onclick="selDay='${d}';go('schedule')">ดูวันนี้</button></div>`;
+  });
+  return out;
+}
+function addTask(){
+  const subject=$('#nSub').value.trim();if(!subject){$('#nSub').focus();return}
+  S.tasks.push({id:uid(),date:selDay,subject,topic:$('#nTop').value.trim(),min:Math.max(5,+$('#nMin').value||30),done:false});
+  save();render();
+}
+function toggle(id){const t=S.tasks.find(x=>x.id===id);t.done=!t.done;save();render()}
+function delTask(id){S.tasks=S.tasks.filter(x=>x.id!==id);if(T.taskId===id)T.taskId=null;save();render()}
+function startTask(id){
+  T.taskId=id;
+  if(T.run){clearInterval(T.iv);T.run=false}
+  setMode('focus',true);tab='timer';render();toggleRun();
+}
+
+/* ---------- 2. Timer ---------- */
+const MODES={focus:'โฟกัส',short:'พักสั้น',long:'พักยาว'};
+function setMode(m,silent){
+  clearInterval(T.iv);T.run=false;T.mode=m;
+  T.total=T.left=S.settings[m]*60;
+  if(!silent)render();
+}
+function vTimer(){
+  const t=S.tasks.find(x=>x.id===T.taskId);
+  const c=T.mode==='focus'?'var(--acc)':'var(--acc2)';
+  return `<h1>จับเวลาสมาธิ</h1>
+  <div class="card now">${t?`<small style="color:var(--mute)">กำลังอ่าน</small><br><b>${esc(t.subject)}</b><br><small>${esc(t.topic||'ไม่ระบุหัวข้อ')} · อ่านแล้ว ${studied(t.id)}/${t.min} นาที</small>`
+    :`<b>อ่านอิสระ</b><br><small style="color:var(--mute)">เลือกวิชาจากตารางเรียนเพื่อบันทึกเข้าวิชานั้น</small>`}</div>
+  <div class="modes">${Object.keys(MODES).map(m=>`<button class="${T.mode===m?'on':''}" onclick="setMode('${m}')">${MODES[m]}</button>`).join('')}</div>
+  <div class="ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="var(--line)" stroke-width="6"/>
+    <circle id="arc" cx="50" cy="50" r="45" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round" stroke-dasharray="282.74" stroke-dashoffset="0"/></svg>
+    <div class="time"><span id="clock">25:00</span><small>รอบที่ ${T.count+(T.mode==='focus'?1:0)||1}</small></div></div>
+  <div class="row" style="justify-content:center;margin-bottom:16px">
+    <button id="runBtn" onclick="toggleRun()" style="min-width:120px">${T.run?'หยุดชั่วคราว':'เริ่ม'}</button>
+    <button class="ghost" onclick="setMode(T.mode)">รีเซ็ต</button><button class="ghost" onclick="finish(false)">ข้าม</button></div>
+  <div class="card"><h2>ตั้งค่าเวลา (นาที)</h2><div class="set">
+    ${[['focus','โฟกัส'],['short','พักสั้น'],['long','พักยาว']].map(([k,l])=>`<label>${l}<input type="number" min="1" max="120" value="${S.settings[k]}" onchange="setCfg('${k}',this.value)"></label>`).join('')}</div></div>`;
+}
+function setCfg(k,v){S.settings[k]=Math.min(120,Math.max(1,+v||1));save();if(!T.run&&T.mode===k){T.total=T.left=S.settings[k]*60;tick(true)}}
+function toggleRun(){
+  if(T.run){T.left=Math.max(0,Math.round((T.end-Date.now())/1000));clearInterval(T.iv);T.run=false}
+  else{T.end=Date.now()+T.left*1000;T.run=true;T.iv=setInterval(tick,500);try{window.Notification&&Notification.permission==='default'&&Notification.requestPermission()}catch(e){}}
+  const b=$('#runBtn');if(b)b.textContent=T.run?'หยุดชั่วคราว':'เริ่ม';
+}
+function tick(force){
+  if(T.run)T.left=Math.max(0,Math.round((T.end-Date.now())/1000));
+  const el=$('#clock');
+  if(el){el.textContent=String(Math.floor(T.left/60)).padStart(2,'0')+':'+String(T.left%60).padStart(2,'0');
+    $('#arc').setAttribute('stroke-dashoffset',(282.74*(1-T.left/T.total)).toFixed(1));}
+  document.title=T.run?`${String(Math.floor(T.left/60)).padStart(2,'0')}:${String(T.left%60).padStart(2,'0')} – Study Focus`:'Study Focus';
+  if(T.run&&T.left<=0)finish(true);
+}
+function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=880;g.gain.value=.15;o.start();o.stop(a.currentTime+.5)}catch(e){}}
+function finish(completed){
+  clearInterval(T.iv);const wasRun=T.run;T.run=false;
+  if(T.mode==='focus'){
+    const min=completed?S.settings.focus:Math.floor((T.total-T.left)/60);
+    if(min>=1){const t=S.tasks.find(x=>x.id===T.taskId);
+      S.sessions.push({date:key(new Date()),min,subject:t?t.subject:'อ่านอิสระ',topic:t?t.topic:'',taskId:t?t.id:null});
+      if(t&&studied(t.id)>=t.min)t.done=true;
+      save();}
+    if(completed)T.count++;
+  }
+  if(completed){beep();try{window.Notification&&Notification.permission==='granted'&&new Notification(T.mode==='focus'?'จบรอบโฟกัสแล้ว พักสักครู่':'หมดเวลาพัก กลับมาอ่านกัน')}catch(e){}}
+  const next=T.mode==='focus'?(T.count%4===0&&completed?'long':'short'):'focus';
+  setMode(next,true);render();
+}
+
+/* ---------- 4. Study guide (ถาม Claude ผ่านลิงก์ที่เผยแพร่) ---------- */
+let G={subject:'คณิตศาสตร์',topic:'',level:'ม.2',out:'',busy:false,err:''};
+const LV=['ป.4','ป.5','ป.6','ม.1','ม.2','ม.3','ม.4','ม.5','ม.6'];
+function md(t){
+  const h=esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');let out='',ul=false;
+  h.split('\n').forEach(l=>{
+    const li=l.match(/^\s*[-*•]\s+(.*)/);
+    if(li){if(!ul){out+='<ul>';ul=true}out+='<li>'+li[1]+'</li>';return}
+    if(ul){out+='</ul>';ul=false}
+    const hd=l.match(/^#{1,4}\s+(.*)/);
+    if(hd)out+='<h3>'+hd[1]+'</h3>';else if(l.trim())out+='<p>'+l+'</p>';
+  });
+  return out+(ul?'</ul>':'');
+}
+function linksHTML(){
+  const q=encodeURIComponent(`${G.subject} ${G.level} ${G.topic}`),ln='style="flex:1;text-align:center;text-decoration:none;background:var(--bg);color:var(--acc);border:1px solid var(--line);border-radius:12px;padding:10px"';
+  return `<div class="row" style="margin-bottom:10px"><a ${ln} target="_blank" rel="noopener" href="https://www.google.com/search?q=${q}+สรุป+แบบฝึกหัด">ค้นใน Google</a><a ${ln} target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}">ค้นใน YouTube</a></div>`;
+}
+function gOutHTML(){
+  if(G.err&&!G.out)return `<div class="card" role="alert">${esc(G.err)}</div>`;
+  if(G.busy&&!G.out)return '<div class="card empty">กำลังค้นหาแนวทาง…</div>';
+  if(!G.out)return '<div class="card empty">พิมพ์วิชาและเรื่องที่อยากอ่าน เช่น คณิตศาสตร์ – วงกลม แล้วกด "ค้นหา"</div>';
+  const note=G.src==='local'?'นี่คือแนวทางการอ่านทั่วไป ยังไม่ใช่สรุปเนื้อหาของเรื่องนี้ ถ้าอยากได้เนื้อหา สูตร และตัวอย่างโจทย์ ให้ใส่ API key ในช่อง "ใช้ AI" ด้านบน หรือกดค้นใน Google/YouTube':'เนื้อหาสร้างโดย AI และไม่ได้ค้นเว็บ อาจต่างจากที่โรงเรียนสอน ควรเทียบกับหนังสือเรียนหรือถามครูอีกครั้ง';
+  return (G.err?`<div class="card" role="alert">${esc(G.err)}</div>`:'')+`<div class="card guide">${md(G.out)}</div>`+(G.busy?'':`<div class="row" style="margin-bottom:10px"><button onclick="guideToPlan()">เพิ่มเป็นแผนการอ่านวันนี้</button></div>${linksHTML()}<p style="color:var(--mute);font-size:13px">${note}</p>`);
+}
+function vGuide(){
+  const rec=S.guides||[];
+  return `<h1>ค้นคว้าแนวทางการอ่าน</h1>
+  <div class="card"><div class="set" style="grid-template-columns:1fr 90px;margin-bottom:8px"><input id="gSub" value="${esc(G.subject)}" placeholder="วิชา" aria-label="วิชา"><select id="gLv" aria-label="ระดับชั้น">${LV.map(l=>`<option ${l===G.level?'selected':''}>${l}</option>`).join('')}</select></div>
+  <div class="row"><input id="gTop" value="${esc(G.topic)}" placeholder="เรื่อง เช่น วงกลม" maxlength="80" aria-label="เรื่องที่ต้องการ" onkeydown="if(event.key==='Enter')askGuide()"><button id="gBtn" onclick="askGuide()" ${G.busy?'disabled':''}>ค้นหา</button></div></div>
+  <details class="card"><summary>ใช้ AI ตอบละเอียด (ใส่ API key ของตัวเอง)</summary>
+    <p style="color:var(--mute);font-size:13px">ใส่คีย์จาก console.anthropic.com แล้ว AI จะสรุปเนื้อหา สูตร และตัวอย่างโจทย์ให้ คีย์เก็บในเครื่องนี้เท่านั้น ไม่ส่งให้ใครนอกจาก Anthropic ตอนค้นหา</p>
+    <div class="row"><input id="gKey" type="password" placeholder="sk-ant-..." value="${esc(getKey())}" autocomplete="off" aria-label="API key"><button onclick="saveKey()">บันทึก</button></div></details>
+  <div id="gOut">${gOutHTML()}</div>
+  ${rec.length?`<div class="card"><h2>ที่เคยค้นหา</h2>${rec.map((r,i)=>`<div class="task"><div class="t"><b>${esc(r.subject)} – ${esc(r.topic)}</b><small>${esc(r.level)}</small></div><button class="ghost sm" onclick="openGuide(${i})">เปิดดู</button></div>`).join('')}</div>`:''}`;
+}
+async function askGuide(){
+  G.subject=$('#gSub').value.trim();G.level=$('#gLv').value;G.topic=$('#gTop').value.trim();
+  if(!G.subject||!G.topic){(G.topic?$('#gSub'):$('#gTop')).focus();return}
+  let sample=null;
+  try{sample=window.claude?await window.claude.use('sample'):null}catch(e){}
+  if(!sample){await fallbackGuide();return}
+  G.err='';G.out='';G.busy=true;$('#gBtn').disabled
